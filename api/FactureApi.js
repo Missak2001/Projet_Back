@@ -1,4 +1,4 @@
-module.exports = (app, svc) => {
+module.exports = (app, svc,jwt) => {
     app.get("/facture", async (req, res) => {
         res.json(await svc.dao.getAllFacture())
     })
@@ -13,7 +13,7 @@ module.exports = (app, svc) => {
     });
 
 
-    app.post("/facture/registerFacture", async (req, res) => {
+    app.post("/facture/registerFacture",jwt.validateJWT, async (req, res) => {
         try {
             const facture = req.body;
             const statut = facture.statut === "true";

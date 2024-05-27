@@ -1,8 +1,9 @@
 const bcrypt = require('bcrypt');
 
+
 module.exports = (app, svc, jwt) => {
 
-    app.get("/useraccount", jwt.validateJWT,async (req, res) => {
+    app.get("/useraccount", jwt.validateJWT, async (req, res) => {
         try {
             const userAccounts = await svc.dao.getAll();
             res.json(userAccounts);

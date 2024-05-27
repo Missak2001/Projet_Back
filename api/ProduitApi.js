@@ -15,11 +15,21 @@ module.exports = (app, svc, jwt) => {
         }
     })
 
-    app.post("/produit/registerProduit", async (req, res) => {
+    app.post("/produit/registerProduit", jwt.validateJWT, async (req, res) => {
         try {
             const produit = req.body;
 
-            svc.insertProduit(produit.titreP, produit.categorie_p, produit.prix_P)
+            // Vérifier si req.user est défini et contient les informations de l'utilisateur
+            if (!req.user || !req.user.id) {
+                console.error("Informations de l'utilisateur manquantes dans la requête");
+                return res.status(401).json({ error: "Informations de l'utilisateur manquantes" });
+            }
+
+            // Extraire l'ID de l'utilisateur de req.user
+            const id_useraccount = req.user.id;
+
+            // Enregistrer le produit avec l'ID de l'utilisateur
+            svc.insertProduit(produit.titreP, produit.categorie_p, produit.prix_P, id_useraccount)
                 .then(_ => {
                     res.status(201).json({ message: "Produit enregistré avec succès" });
                 })
@@ -32,6 +42,7 @@ module.exports = (app, svc, jwt) => {
             res.status(500).json({ error: "Erreur interne du serveur" });
         }
     });
+
 
     app.delete("/produit/:id", async (req, res) => {
         const produit = await svc.dao.getById(req.params.id)
