@@ -1,0 +1,38 @@
+version: '3.1'
+services:
+  postgresql:
+    image: postgres:latest
+    restart: always
+    environment:
+      POSTGRES_DB: projet-FacturePro
+      POSTGRES_USER: projetFacturePro
+      POSTGRES_PASSWORD: azerty
+    volumes:
+      - data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    networks:
+      - app-network
+    command: ["postgres", "-c", "log_statement=all"] # Pour voir les requêtes SQL dans le log
+
+  backend:
+    build: .
+    command: npm start
+    volumes:
+      - .:/usr/src/app
+    environment:
+      CONNECTION_STRING: postgresql://projetFacturePro:azerty@postgresql:5432/projet-FacturePro
+      PORT: 3333
+    ports:
+      - "3333:3333"
+    depends_on:
+      - postgresql
+    networks:
+      - app-network
+
+volumes:
+  data:
+
+networks:
+  app-network:
+    driver: bridge
