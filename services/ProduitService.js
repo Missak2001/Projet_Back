@@ -6,9 +6,9 @@ module.exports = class ProduitService {
         this.dao = new ProduitDAO(db)
     }
 
-    async insertProduit(titreP,categorie_p ,prix_P) {
+    async insertProduit(titrep, categorie_p, prix_p, id_useraccount) {
         try {
-            return this.dao.insertProduit(new Produit(titreP, categorie_p, prix_P));
+            return this.dao.insertProduit(new Produit(titrep, categorie_p, prix_p, id_useraccount));
         } catch (error) {
             throw error;
         }

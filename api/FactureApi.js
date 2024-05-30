@@ -1,7 +1,8 @@
-module.exports = (app, svc,jwt) => {
+module.exports = (app, svc, jwt) => {
     app.get("/facture", async (req, res) => {
         res.json(await svc.dao.getAllFacture())
-    })
+    });
+
     app.get("/facture/produit", async (req, res) => {
         try {
             const products = await svc.getAllProducts();
@@ -12,8 +13,7 @@ module.exports = (app, svc,jwt) => {
         }
     });
 
-
-    app.post("/facture/registerFacture",jwt.validateJWT, async (req, res) => {
+    app.post("/facture/registerFacture", jwt.validateJWT, async (req, res) => {
         try {
             const facture = req.body;
             const statut = facture.statut === "true";
@@ -37,45 +37,29 @@ module.exports = (app, svc,jwt) => {
         }
     });
 
-
-    app.get("/produit", async (req, res) => {
-        try {
-            const products = await svc.getAllProduit(); // Utilisez getAllProduits au lieu de getAllProduit
-            res.json(products);
-        } catch (err) {
-            console.error("Erreur lors de la récupération des produits :", err);
-            res.status(500).json({ error: "Erreur interne du serveur" });
-        }
-    });
-
-
-
     app.delete("/facture/:id", async (req, res) => {
-        const facture = await svc.dao.getById(req.params.id)
+        const facture = await svc.dao.getById(req.params.id);
         if (facture === undefined) {
-            return res.status(404).end()
+            return res.status(404).end();
         }
         svc.dao.delete(req.params.id)
             .then(_ => res.status(200).end())
             .catch(e => {
-                console.log(e)
-                res.status(500).end()
-            })
-    })
+                console.log(e);
+                res.status(500).end();
+            });
+    });
 
     app.put("/facture", async (req, res) => {
-        const facture = req.body
-        // if ((item.id === undefined) || (item.id == null) || (!svc.isValid(item))) {
-        //     return res.status(400).end()
-        // }
+        const facture = req.body;
         if (await svc.dao.getById(facture.id) === undefined) {
-            return res.status(404).end()
+            return res.status(404).end();
         }
         svc.dao.updateFacture(facture)
             .then(_ => res.status(200).end())
             .catch(e => {
-                console.log(e)
-                res.status(500).end()
-            })
-    })
+                console.log(e);
+                res.status(500).end();
+            });
+    });
 }

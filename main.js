@@ -1,3 +1,4 @@
+
 const pg = require('pg')
 const express = require('express')
 const bodyParser = require('body-parser')
@@ -45,5 +46,3 @@ require('./datamodel/seeders/seederFacture')(factureService)
 require('./datamodel/seeders/seederProduit')(produitService)
 require('./datamodel/seeders/seederUserAccount')(useraccountService)
     .then(app.listen(3333))
-
-
