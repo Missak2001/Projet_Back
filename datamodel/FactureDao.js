@@ -44,4 +44,5 @@ module.exports = class FactureDAO extends BaseDAO {
                 .catch(e => reject(e))
         );
     }
+
 };

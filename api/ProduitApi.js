@@ -1,8 +1,17 @@
 module.exports = (app, svc, jwt) => {
-    app.get("/produit", async (req, res) => {
-        res.json(await svc.dao.getAllProduit());
-    });
 
+    app.get("/produitWithUser", jwt.validateJWT, async (req, res) => {
+        if (!req.user || !req.user.id) {
+            return res.status(401).json({ error: "Utilisateur non authentifié" });
+        }
+        try {
+            const produits = await svc.dao.getProduitsByUser(req.user.id);
+            res.json(produits);
+        } catch (e) {
+            console.error("Erreur lors de la récupération des produits :", e);
+            res.status(500).json({ error: "Erreur interne du serveur" });
+        }
+    });
     app.get("/produit/:id", async (req, res) => {
         try {
             const produit = await svc.dao.getById(req.params.id);
@@ -65,15 +74,5 @@ module.exports = (app, svc, jwt) => {
                 console.log(e);
                 res.status(500).end();
             });
-    });
-
-    app.get("/produitWithUser", async (req, res) => {
-        try {
-            const produits = await svc.dao.getProduitsWithUser();
-            res.json(produits);
-        } catch (e) {
-            console.error("Erreur lors de la récupération des produits avec utilisateur :", e);
-            res.status(500).json({ error: "Erreur interne du serveur" });
-        }
     });
 };

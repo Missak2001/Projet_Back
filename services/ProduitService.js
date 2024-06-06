@@ -13,4 +13,11 @@ module.exports = class ProduitService {
             throw error;
         }
     }
+    async getProduitsByUser(userId) {
+        try {
+            return await this.dao.getProduitsByUser(userId);
+        } catch (error) {
+            throw error;
+        }
+    }
 }

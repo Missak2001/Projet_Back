@@ -5,14 +5,6 @@ module.exports = class ProduitDAO extends BaseDAO {
         super(db, "produit");
     }
 
-    getAllProduit() {
-        return new Promise((resolve, reject) =>
-            this.db.query("SELECT * FROM produit ORDER BY titreP, categorie_p, prix_P")
-                .then(res => resolve(res.rows))
-                .catch(e => reject(e))
-        );
-    }
-
     insertProduit(produit) {
         return this.db.query("INSERT INTO produit(titrep, categorie_p, prix_p, id_useraccount) VALUES ($1, $2, $3, $4)",
             [produit.titrep, produit.categorie_p, produit.prix_p, produit.id_useraccount]);
@@ -31,6 +23,13 @@ module.exports = class ProduitDAO extends BaseDAO {
             JOIN useraccount u ON p.id_useraccount = u.id
             ORDER BY p.titrep, p.categorie_p, p.prix_p
         `)
+                .then(res => resolve(res.rows))
+                .catch(e => reject(e))
+        );
+    }
+    getProduitsByUser(userId) {
+        return new Promise((resolve, reject) =>
+            this.db.query("SELECT * FROM produit WHERE id_useraccount = $1 ORDER BY titrep, categorie_p, prix_p", [userId])
                 .then(res => resolve(res.rows))
                 .catch(e => reject(e))
         );
