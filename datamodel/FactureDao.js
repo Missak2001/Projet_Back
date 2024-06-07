@@ -11,10 +11,19 @@ module.exports = class FactureDAO extends BaseDAO {
         const productIds = Array.isArray(facture.produit_f) ? facture.produit_f.map(id => parseInt(id, 10)) : [];
         const formattedProductIds = `{${productIds.join(",")}}`;
 
-        return this.db.query("INSERT INTO facture(titre, categorie_f, prix_f, statut, adresse_facturation, produit_f, prix_ttc) VALUES ($1, $2, $3, $4, $5, $6, $7)",
-            [facture.titre, facture.categorie_f, facture.prix_f, facture.statut, facture.adresse_facturation, formattedProductIds, facture.prix_ttc]);
+        return this.db.query(
+            "INSERT INTO facture(titre, categorie_f, prix_f, statut, adresse_facturation, produit_f, prix_ttc, created_by) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)",
+            [facture.titre, facture.categorie_f, facture.prix_f, facture.statut, facture.adresse_facturation, formattedProductIds, facture.prix_ttc, facture.created_by]
+        );
     }
 
+    getFacturesByUserId(userId) {
+        return new Promise((resolve, reject) =>
+            this.db.query("SELECT * FROM facture WHERE created_by = $1 ORDER BY titre", [userId])
+                .then(res => resolve(res.rows))
+                .catch(e => reject(e))
+        );
+    }
     getProductPricesByIds(productIds) {
         const idsString = productIds.join(",");
         return this.db.query(`SELECT SUM(prix_p) as total FROM produit WHERE id IN (${idsString})`)
