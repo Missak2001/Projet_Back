@@ -46,6 +46,10 @@ module.exports = class FactureDAO extends BaseDAO {
             [facture.id, facture.titre, facture.categorie_f, facture.prix_f, facture.statut, facture.adresse_facturation, formattedProductIds, facture.prix_ttc]);
     }
 
+    deleteFacture(id) {
+        return this.db.query("DELETE FROM facture WHERE id = $1", [id]);
+    }
+
     getAllProducts() {
         return new Promise((resolve, reject) =>
             this.db.query("SELECT * FROM produit")

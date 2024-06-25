@@ -44,12 +44,14 @@ module.exports = class ProduitDAO extends BaseDAO {
     }
 
     insertProduit(produit) {
-        return this.db.query("INSERT INTO produit(titrep, categorie_p, prix_p, id_useraccount) VALUES ($1, $2, $3, $4)",
+        return this.db.query("INSERT INTO produit(titrep, categorie_p, prix_p, id_useraccount)" +
+            " VALUES ($1, $2, $3, $4)",
             [produit.titrep, produit.categorie_p, produit.prix_p, produit.id_useraccount]);
     }
 
     updateProduit(produit) {
-        return this.db.query("UPDATE produit SET titrep = $2, categorie_p = $3, prix_p = $4, id_useraccount = $5 WHERE id = $1",
+        return this.db.query("UPDATE produit SET titrep = $2, categorie_p = $3, " +
+            "prix_p = $4, id_useraccount = $5 WHERE id = $1",
             [produit.id, produit.titrep, produit.categorie_p, produit.prix_p, produit.id_useraccount]);
     }
 

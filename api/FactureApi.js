@@ -1,96 +1,3 @@
-// module.exports = (app, svc, jwt) => {
-//     app.get("/facture", async (req, res) => {
-//         res.json(await svc.dao.getAllFacture());
-//     });
-//
-//     app.get("/facture/produit", async (req, res) => { // Définir la route pour récupérer les produits
-//         try {
-//             const products = await svc.getAllProducts();
-//             res.json(products);
-//         } catch (err) {
-//             console.error("Erreur lors de la récupération des produits :", err);
-//             res.status(500).json({ error: "Erreur interne du serveur" });
-//         }
-//     });
-//
-//     // app.post("/facture/registerFacture", jwt.validateJWT, async (req, res) => {
-//     //     try {
-//     //         const facture = req.body;
-//     //         const statut = facture.statut === "true";
-//     //
-//     //         svc.insertFacture(
-//     //             facture.titre,
-//     //             facture.categorie_f,
-//     //             facture.prix_f,
-//     //             statut,
-//     //             facture.adresse_facturation,
-//     //             facture.produit_f,
-//     //             facture.prix_ttc
-//     //         ).then(_ => {
-//     //             res.status(201).json({ message: "Facture enregistrée avec succès" });
-//     //         }).catch(e => {
-//     //             console.error("Erreur lors de l'enregistrement de la facture :", e);
-//     //             res.status(500).json({ error: "Erreur interne du serveur" });
-//     //         });
-//     //     } catch (e) {
-//     //         console.error("Erreur lors de l'enregistrement de la facture :", e);
-//     //         res.status(500).json({ error: "Erreur interne du serveur" });
-//     //     }
-//     // });
-//     app.post("/facture/registerFacture", jwt.validateJWT, async (req, res) => {
-//         try {
-//             const facture = req.body;
-//             const statut = facture.statut === "true";
-//             const userId = req.user.id; // Assurez-vous que l'ID de l'utilisateur est accessible
-//
-//             svc.insertFacture(
-//                 facture.titre,
-//                 facture.categorie_f,
-//                 facture.prix_f,
-//                 statut,
-//                 facture.adresse_facturation,
-//                 facture.produit_f,
-//                 facture.prix_ttc,
-//                 userId // Passer l'ID de l'utilisateur
-//             ).then(_ => {
-//                 res.status(201).json({ message: "Facture enregistrée avec succès" });
-//             }).catch(e => {
-//                 console.error("Erreur lors de l'enregistrement de la facture :", e);
-//                 res.status(500).json({ error: "Erreur interne du serveur" });
-//             });
-//         } catch (e) {
-//             console.error("Erreur lors de l'enregistrement de la facture :", e);
-//             res.status(500).json({ error: "Erreur interne du serveur" });
-//         }
-//     });
-//     app.delete("/facture/:id", async (req, res) => {
-//         const facture = await svc.dao.getById(req.params.id);
-//         if (facture === undefined) {
-//             return res.status(404).end();
-//         }
-//         svc.dao.delete(req.params.id)
-//             .then(_ => res.status(200).end())
-//             .catch(e => {
-//                 console.error(e);
-//                 res.status(500).end();
-//             });
-//     });
-//
-//     app.put("/facture", async (req, res) => {
-//         const facture = req.body;
-//         if (await svc.dao.getById(facture.id) === undefined) {
-//             return res.status(404).end();
-//         }
-//         svc.dao.updateFacture(facture)
-//             .then(_ => res.status(200).end())
-//             .catch(e => {
-//                 console.error(e);
-//                 res.status(500).end();
-//             });
-//     });
-// };
-// factureapi.js
-
 module.exports = (app, svc, jwt) => {
     app.get("/facture", jwt.validateJWT, async (req, res) => {
         res.json(await svc.dao.getAllFacture());
@@ -102,7 +9,7 @@ module.exports = (app, svc, jwt) => {
             res.json(products);
         } catch (err) {
             console.error("Erreur lors de la récupération des produits :", err);
-            res.status(500).json({ error: "Erreur interne du serveur" });
+            res.status(500).json({error: "Erreur interne du serveur"});
         }
     });
 
@@ -113,7 +20,7 @@ module.exports = (app, svc, jwt) => {
             res.json(factures);
         } catch (err) {
             console.error("Erreur lors de la récupération des factures :", err);
-            res.status(500).json({ error: "Erreur interne du serveur" });
+            res.status(500).json({error: "Erreur interne du serveur"});
         }
     });
 
@@ -133,40 +40,48 @@ module.exports = (app, svc, jwt) => {
                 facture.prix_ttc,
                 userId
             ).then(_ => {
-                res.status(201).json({ message: "Facture enregistrée avec succès" });
+                res.status(201).json({message: "Facture enregistrée avec succès"});
             }).catch(e => {
                 console.error("Erreur lors de l'enregistrement de la facture :", e);
-                res.status(500).json({ error: "Erreur interne du serveur" });
+                res.status(500).json({error: "Erreur interne du serveur"});
             });
         } catch (e) {
             console.error("Erreur lors de l'enregistrement de la facture :", e);
-            res.status(500).json({ error: "Erreur interne du serveur" });
+            res.status(500).json({error: "Erreur interne du serveur"});
+        }
+    });
+
+    app.put("/facture/:id", async (req, res) => {
+        const facture = req.body;
+        try {
+            await svc.updateFacture(facture);
+            res.status(200).json({message: "Facture mise à jour avec succès"});
+        } catch (err) {
+            console.error("Erreur lors de la mise à jour de la facture :", err);
+            res.status(500).json({error: "Erreur interne du serveur"});
         }
     });
 
     app.delete("/facture/:id", async (req, res) => {
-        const facture = await svc.dao.getById(req.params.id);
-        if (facture === undefined) {
-            return res.status(404).end();
+        try {
+            await svc.deleteFacture(req.params.id);
+            res.status(200).json({message: "Facture supprimée avec succès"});
+        } catch (err) {
+            console.error("Erreur lors de la suppression de la facture :", err);
+            res.status(500).json({error: "Erreur interne du serveur"});
         }
-        svc.dao.delete(req.params.id)
-            .then(_ => res.status(200).end())
-            .catch(e => {
-                console.error(e);
-                res.status(500).end();
-            });
     });
-
-    app.put("/facture", async (req, res) => {
-        const facture = req.body;
-        if (await svc.dao.getById(facture.id) === undefined) {
-            return res.status(404).end();
+    app.get("/facture/pdf/:id", jwt.validateJWT, async (req, res) => {
+        try {
+            const pdfData = await svc.generateFacturePDF(req.params.id);
+            res.writeHead(200, {
+                'Content-Length': Buffer.byteLength(pdfData),
+                'Content-Type': 'application/pdf',
+                'Content-Disposition': `attachment; filename=facture_${req.params.id}.pdf`,
+            }).end(pdfData);
+        } catch (error) {
+            console.error("Erreur lors de la génération du PDF :", error);
+            res.status(500).json({ error: "Erreur interne du serveur" });
         }
-        svc.dao.updateFacture(facture)
-            .then(_ => res.status(200).end())
-            .catch(e => {
-                console.error(e);
-                res.status(500).end();
-            });
     });
 };

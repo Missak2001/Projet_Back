@@ -1,59 +1,71 @@
 module.exports = (app, svc) => {
     app.get("/demande", async (req, res) => {
-        res.json(await svc.dao.getAllDemande())
-    })
+        try {
+            const demandes = await svc.dao.getAllDemande();
+            res.json(demandes);
+        } catch (error) {
+            console.error("Erreur lors de la récupération des demandes:", error);
+            res.status(500).json({ error: "Erreur interne du serveur" });
+        }
+    });
 
     app.get("/demande/:id", async (req, res) => {
+        const demandeId = parseInt(req.params.id);
         try {
-            const demande = await svc.dao.getById(req.params.id)
-            if (demande === undefined) {
-                return res.status(404).end()
+            const demande = await svc.dao.getById(demandeId);
+            if (!demande) {
+                res.status(404).json({ message: "Demande non trouvée" });
+                return;
             }
-            return res.json(demande)
-        } catch (e) {
-            res.status(400).end()
+            res.json(demande);
+        } catch (error) {
+            console.error("Erreur lors de la récupération de la demande:", error);
+            res.status(500).json({ error: "Erreur interne du serveur" });
         }
-    })
+    });
 
-    app.post("/demande", (req, res) => {
-        const demande = req.body
-        // if (!svc.isValid(item)) {
-        //     return res.status(400).end()
-        // }
-        svc.dao.insertDemande(demande)
-            .then(_ => res.status(200).end())
-            .catch(e => {
-                console.log(e)
-                res.status(500).end()
-            })
-    })
+    app.post("/demande", async (req, res) => {
+        const demande = req.body;
+        try {
+            await svc.dao.insertDemande(demande);
+            res.status(201).json({ message: "Demande créée avec succès" });
+        } catch (error) {
+            console.error("Erreur lors de la création de la demande:", error);
+            res.status(500).json({ error: "Erreur interne du serveur" });
+        }
+    });
 
     app.delete("/demande/:id", async (req, res) => {
-        const demande = await svc.dao.getById(req.params.id)
-        if (demande === undefined) {
-            return res.status(404).end()
+        const demandeId = parseInt(req.params.id);
+        try {
+            const demande = await svc.dao.getById(demandeId);
+            if (!demande) {
+                res.status(404).json({ message: "Demande non trouvée" });
+                return;
+            }
+            await svc.dao.delete(demandeId);
+            res.json({ message: "Demande supprimée avec succès" });
+        } catch (error) {
+            console.error("Erreur lors de la suppression de la demande:", error);
+            res.status(500).json({ error: "Erreur interne du serveur" });
         }
-        svc.dao.delete(req.params.id)
-            .then(_ => res.status(200).end())
-            .catch(e => {
-                console.log(e)
-                res.status(500).end()
-            })
-    })
+    });
 
-    app.put("/demande", async (req, res) => {
-        const demande = req.body
-        // if ((item.id === undefined) || (item.id == null) || (!svc.isValid(item))) {
-        //     return res.status(400).end()
-        // }
-        if (await svc.dao.getById(demande.id) === undefined) {
-            return res.status(404).end()
+    app.put("/demande/:id", async (req, res) => {
+        const demandeId = parseInt(req.params.id);
+        const updatedDemande = req.body;
+        try {
+            const demande = await svc.dao.getById(demandeId);
+            if (!demande) {
+                res.status(404).json({ message: "Demande non trouvée" });
+                return;
+            }
+            updatedDemande.id = demandeId;
+            await svc.dao.updateDemande(updatedDemande);
+            res.json({ message: "Demande mise à jour avec succès" });
+        } catch (error) {
+            console.error("Erreur lors de la mise à jour de la demande:", error);
+            res.status(500).json({ error: "Erreur interne du serveur" });
         }
-        svc.dao.updateDemande(demande)
-            .then(_ => res.status(200).end())
-            .catch(e => {
-                console.log(e)
-                res.status(500).end()
-            })
-    })
-}
+    });
+};
