@@ -11,8 +11,7 @@ module.exports = class FactureService {
 
     async insertFacture(titre, categorie_f, prix_f, statut, adresse_facturation, produit_f, prix_ttc, created_by) {
         try {
-            const prixTotalProduits = await this.dao.getProductPricesByIds(produit_f);
-            const facture = new Facture(titre, categorie_f, prixTotalProduits, statut, adresse_facturation, produit_f, prix_ttc, created_by);
+            const facture = new Facture(titre, categorie_f, prix_f, statut, adresse_facturation, produit_f, prix_ttc, created_by);
             return await this.dao.insertFacture(facture);
         } catch (error) {
             throw error;
