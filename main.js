@@ -70,18 +70,13 @@ app.use(morgan('dev'));
 app.use(xss());
 app.use(helmet());
 
-// ✅ Détection automatique de Platform.sh ou fallback local (.env)
-let DATABASE_URL = process.env.DATABASE_URL;
-
-if (process.env.PLATFORM_RELATIONSHIPS) {
-    const { relationships } = require("platformsh-config").config();
-    const db = relationships.db[0];
-    const { host, port, username, password, path } = db;
-    const database = path;
-    DATABASE_URL = `postgres://${username}:${password}@${host}:${port}/${database}`;
+// ✅ Connexion PostgreSQL (uniquement via env)
+const DATABASE_URL = process.env.DATABASE_URL;
+if (!DATABASE_URL) {
+    console.error("❌ DATABASE_URL n'est pas défini.");
+    process.exit(1);
 }
 
-// ✅ Connexion PostgreSQL
 const db = new pg.Pool({ connectionString: DATABASE_URL });
 
 const factureService = new FactureService(db);
@@ -89,19 +84,19 @@ const produitService = new ProduitService(db);
 const useraccountService = new UserAccountService(db);
 const jwt = require('./jwt')(useraccountService);
 
-// ✅ API Routing
+// ✅ Routing
 require('./api/FactureApi')(app, factureService, jwt);
 require('./api/ProduitApi')(app, produitService, jwt);
 require('./api/UserAccountApi')(app, useraccountService, jwt);
 
-// ✅ Seeder + Démarrage serveur
+// ✅ Seeder et lancement serveur
 Promise.all([
     require('./datamodel/seeders/seederFacture')(factureService),
     require('./datamodel/seeders/seederProduit')(produitService),
     require('./datamodel/seeders/seederUserAccount')(useraccountService)
 ])
     .then(() => {
-        const PORT = process.env.PORT || 3333;
+        const PORT = process.env.PORT || 3000;
         app.listen(PORT, '0.0.0.0', () => {
             console.log(`✅ Serveur démarré sur http://localhost:${PORT}`);
         });

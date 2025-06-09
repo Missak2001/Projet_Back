@@ -4,12 +4,15 @@ module.exports = class UserAccountDAO extends BaseDAO {
     constructor(db) {
         super(db, "useraccount")
     }
-    insert(useraccount) {
-        return this.db.query(
-            "INSERT INTO useraccount(displayname, login, password, isEnterprise, role) VALUES ($1, $2, $3, $4, $5)",
-            [useraccount.displayName, useraccount.login, useraccount.password, useraccount.isEnterprise, useraccount.role]
+    async insert(displayName, login, hashedPassword, isEnterprise, role) {
+        const result = await this.db.query(
+            `INSERT INTO useraccount(displayname, login, password, isenterprise, role)
+         VALUES($1, $2, $3, $4, $5) RETURNING *`,
+            [displayName, login, hashedPassword, isEnterprise, role]
         );
+        return result.rows[0];
     }
+
 
     getByLoginUserAccount(login) {
         return new Promise((resolve, reject) =>
