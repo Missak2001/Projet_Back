@@ -9,9 +9,10 @@ module.exports = class UserAccountService {
     // async insert(displayName, login, hashedPassword, isEnterprise) {
     //     return this.dao.insert(new UserAccount(displayName, login, hashedPassword, isEnterprise, role));
     // }
-    async insert(displayName, login, password, isEnterprise, role) {
-        return await this.dao.insert(displayName, login, password, isEnterprise, role);
+    async insert(displayName, login, password, isEnterprise) {
+        return await this.dao.insert(displayName, login, password, isEnterprise);
     }
+
 
     async validatePassword(login, password) {
         try {

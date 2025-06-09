@@ -81,13 +81,13 @@ module.exports = (app, svc, jwt) => {
 
     app.post("/useraccount/register", async (req, res) => {
         try {
-            const { displayName, login, password, isEnterprise, role } = req.body;
+            const { displayName, login, password, isEnterprise } = req.body;
             if (!login || !password || password.length < 6) {
                 return res.status(400).json({ error: "Identifiants invalides" });
             }
             const hashedPassword = await bcrypt.hash(password, 10);
             console.log("👤 DONNÉES ENVOYÉES :", { displayName, login, password, isEnterprise,role });
-            await svc.insert(displayName, login, hashedPassword, isEnterprise, role || 'user');
+            await svc.insert(displayName, login, hashedPassword, isEnterprise);
             res.status(201).json({ message: "Utilisateur enregistré avec succès" });
         } catch (e) {
             console.error("❌ Erreur dans register :", e);
