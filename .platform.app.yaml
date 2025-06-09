@@ -1,0 +1,22 @@
+name: app
+type: nodejs:18
+build:
+  commands:
+    build: npm install
+web:
+  commands:
+    start: node main.js
+  locations:
+    "/":
+      root: ""
+      passthru: true
+      allow: true
+mounts:
+  "/node_modules":
+    source: local
+    source_path: node_modules
+relationships:
+  db: "db:postgresql"
+variables:
+  env:
+    NODE_ENV: "production"
