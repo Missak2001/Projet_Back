@@ -48,7 +48,6 @@
 //     });
 // module.exports = { app };
 //
-
 require('dotenv').config();
 
 const pg = require('pg');
@@ -71,9 +70,8 @@ app.use(morgan('dev'));
 app.use(xss());
 app.use(helmet());
 
-// ✅ Support automatique de Platform.sh ou fallback .env
+// ✅ Support Platform.sh (auto) ou .env (local)
 let DATABASE_URL = process.env.DATABASE_URL;
-
 if (process.env.PLATFORM_RELATIONSHIPS) {
     const { relationships } = require("platformsh-config").config();
     const db = relationships.db[0];
@@ -82,7 +80,6 @@ if (process.env.PLATFORM_RELATIONSHIPS) {
     DATABASE_URL = `postgres://${username}:${password}@${host}:${port}/${database}`;
 }
 
-// ✅ Connexion PostgreSQL
 const db = new pg.Pool({ connectionString: DATABASE_URL });
 
 const factureService = new FactureService(db);
@@ -100,8 +97,9 @@ Promise.all([
     require('./datamodel/seeders/seederUserAccount')(useraccountService)
 ])
     .then(() => {
-        app.listen(process.env.PORT || 3333, () => {
-            console.log("✅ Serveur démarré sur http://localhost:3333");
+        const port = process.env.PORT || 3333;
+        app.listen(port, '0.0.0.0', () => {
+            console.log(`✅ Serveur démarré sur http://localhost:${port}`);
         });
     })
     .catch(err => {
