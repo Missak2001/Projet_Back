@@ -15,6 +15,6 @@ module.exports = class UserAccount {
         this.login = login;
         this.password = password;
         this.isEnterprise = isEnterprise;
-        this.role = role; // nouveau champ
+        this.role = role;
     }
 };

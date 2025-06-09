@@ -6,13 +6,18 @@
     "cors": "^2.8.5",
     "dotenv": "^16.5.0",
     "express": "^4.17.1",
+    "express-validator": "^7.2.1",
+    "helmet": "^8.1.0",
     "jsonwebtoken": "^9.0.2",
     "mocha": "^11.5.0",
     "morgan": "^1.10.0",
     "pdfkit": "^0.15.0",
-    "pg": "^8.5.1"
+    "pg": "^8.5.1",
+    "platformsh-config": "^2.4.1",
+    "xss-clean": "^0.1.4"
   },
   "scripts": {
+    "start": "node main.js",
     "run": "node main.js",
     "debug": "node --inspect --inspect-brk main.js",
     "test": "mocha"

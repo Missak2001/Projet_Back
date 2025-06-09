@@ -58,4 +58,11 @@ module.exports = class FactureDAO extends BaseDAO {
         );
     }
 
+    getById(id) {
+        return this.db.query("SELECT * FROM facture WHERE id = $1", [id])
+            .then(res => res.rows[0])
+            .catch(e => { throw e });
+    }
+
+
 };

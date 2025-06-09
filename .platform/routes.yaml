@@ -1,0 +1,5 @@
+"https://{default}/":
+  type: upstream
+  upstream: "node-backend:http"
+  cache:
+    enabled: false

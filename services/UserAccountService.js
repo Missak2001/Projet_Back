@@ -6,8 +6,12 @@ module.exports = class UserAccountService {
     constructor(db) {
         this.dao = new UserAccountDAO(db);
     }
-    async insert(displayName, login, hashedPassword, isEnterprise) {
-        return this.dao.insert(new UserAccount(displayName, login, hashedPassword, isEnterprise, role));
+    // async insert(displayName, login, hashedPassword, isEnterprise) {
+    //     return this.dao.insert(new UserAccount(displayName, login, hashedPassword, isEnterprise, role));
+    // }
+    async insert(displayName, login, hashedPassword, isEnterprise, role = 'user') {
+        const user = new UserAccount(displayName, login, hashedPassword, isEnterprise, role);
+        return this.dao.insert(user);
     }
 
     async validatePassword(login, password) {
@@ -21,5 +25,17 @@ module.exports = class UserAccountService {
             throw error;
         }
     }
+    async updateProfile(id, displayName, password) {
+        if (!id || !displayName) throw new Error("Paramètres invalides");
+
+        let hashedPassword = null;
+        if (password && password.length >= 6) {
+            hashedPassword = await bcrypt.hash(password, 10);
+        }
+
+        return await this.dao.updateUser(id, displayName, hashedPassword);
+    }
+
+
 
 }

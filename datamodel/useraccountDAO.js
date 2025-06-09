@@ -5,8 +5,10 @@ module.exports = class UserAccountDAO extends BaseDAO {
         super(db, "useraccount")
     }
     insert(useraccount) {
-        return this.db.query("INSERT INTO useraccount(displayname,login,password,isEnterprise) VALUES ($1,$2,$3, $4)",
-            [useraccount.displayName, useraccount.login, useraccount.password, useraccount.isEnterprise])
+        return this.db.query(
+            "INSERT INTO useraccount(displayname, login, password, isEnterprise, role) VALUES ($1, $2, $3, $4, $5)",
+            [useraccount.displayName, useraccount.login, useraccount.password, useraccount.isEnterprise, useraccount.role]
+        );
     }
 
     getByLoginUserAccount(login) {
@@ -20,7 +22,8 @@ module.exports = class UserAccountDAO extends BaseDAO {
                             displayName: user.displayName,
                             login: user.login,
                             password: user.password,
-                            isEnterprise: user.isEnterprise
+                            isEnterprise: user.isEnterprise,
+                            role: user.role
                         });
                     } else {
                         resolve(null); // Retourner null si aucun utilisateur n'est trouvé
@@ -28,5 +31,24 @@ module.exports = class UserAccountDAO extends BaseDAO {
                 })
                 .catch(e => reject(e)))
     }
+    updateUser(id, displayName, hashedPassword) {
+        if (hashedPassword) {
+            return this.db.query(
+                "UPDATE useraccount SET displayname=$1, password=$2 WHERE id=$3",
+                [displayName, hashedPassword, id]
+            );
+        } else {
+            return this.db.query(
+                "UPDATE useraccount SET displayname=$1 WHERE id=$2",
+                [displayName, id]
+            );
+        }
+    }
+    async getAll() {
+        const result = await this.db.query("SELECT * FROM useraccount");
+        return result.rows;
+    }
+
+
 
 }

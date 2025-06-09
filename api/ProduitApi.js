@@ -132,16 +132,17 @@ module.exports = (app, svc, jwt) => {
     app.delete("/produit/:id", jwt.validateJWT, async (req, res) => {
         try {
             const produit = await svc.dao.getProduitById(req.params.id);
-            if (produit === undefined) {
-                return res.status(404).end();
-            }
-            if (produit.id_useraccount !== req.user.id) {
+            if (!produit) return res.status(404).end();
+
+            // Autoriser la suppression si c'est le propriétaire OU si c'est un admin
+            if (req.user.role !== 'admin' && produit.id_useraccount !== req.user.id) {
                 return res.status(403).json({ error: "Accès non autorisé" });
             }
-            await svc.deleteProduit(req.params.id, req.user.id);
+
+            await svc.deleteProduit(req.params.id); // On n’a plus besoin de passer user.id ici
             res.status(200).end();
         } catch (e) {
-            console.log(e);
+            console.error("❌ Erreur suppression produit :", e);
             res.status(500).end();
         }
     });
@@ -163,4 +164,15 @@ module.exports = (app, svc, jwt) => {
             res.status(500).end();
         }
     });
+    app.get("/admin/produits", jwt.validateJWT, jwt.authorizeRole(['admin']), async (req, res) => {
+        try {
+            const produits = await svc.dao.getAllProducts();
+            res.json(produits);
+        } catch (err) {
+            console.error("❌ Erreur admin produits:", err); // LOG !
+            res.status(500).json({ error: "Erreur serveur" });
+        }
+    });
+
+
 };

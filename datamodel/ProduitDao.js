@@ -87,4 +87,9 @@ module.exports = class ProduitDAO extends BaseDAO {
                 .catch(e => reject(e))
         );
     }
+    getAllProducts() {
+        return this.db.query("SELECT * FROM produit")
+            .then(res => res.rows);
+    }
+
 };
