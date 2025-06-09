@@ -1,5 +1,5 @@
 name: node-backend
-type: nodejs:18
+type: "nodejs:18"
 
 disk: 512
 
@@ -21,8 +21,9 @@ relationships:
 mounts:
   "/node_modules":
     source: local
-    source_path: node_modules
+    source_path: "node_modules"
 
 variables:
   env:
     NODE_ENV: "production"
+    PORT: "3000"
