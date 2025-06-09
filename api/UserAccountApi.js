@@ -86,7 +86,7 @@ module.exports = (app, svc, jwt) => {
                 return res.status(400).json({ error: "Identifiants invalides" });
             }
             const hashedPassword = await bcrypt.hash(password, 10);
-            console.log("👤 DONNÉES ENVOYÉES :", { displayName, login, password, isEnterprise,role });
+            console.log("👤 DONNÉES ENVOYÉES :", { displayName, login, password, isEnterprise });
             await svc.insert(displayName, login, hashedPassword, isEnterprise);
             res.status(201).json({ message: "Utilisateur enregistré avec succès" });
         } catch (e) {
