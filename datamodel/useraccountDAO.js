@@ -6,7 +6,7 @@ module.exports = class UserAccountDAO extends BaseDAO {
     }
     async insert(displayName, login, hashedPassword, isEnterprise) {
         const result = await this.db.query(
-            `INSERT INTO user_account(display_name, login, password, is_enterprise)
+            `INSERT INTO useraccount(displayname, login, password, isenterprise)
                 VALUES($1, $2, $3, $4)`
 
         );
