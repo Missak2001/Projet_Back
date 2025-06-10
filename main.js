@@ -50,33 +50,30 @@
 //
 require('dotenv').config();
 
-const pg = require('pg');
 const express = require('express');
+const cors = require('cors'); // doit venir AVANT son usage
 const xss = require('xss-clean');
 const helmet = require('helmet');
 const bodyParser = require('body-parser');
-// const cors = require('cors');
-const corsOptions = {
-    origin: [
-        "http://localhost:63342", // pour tests locaux
-        "https://eloquent-pony-ceb5fb.netlify.app" // ton site live Netlify
-    ],
-    methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
-    credentials: true
-};
-
-app.use(cors(corsOptions));
-
 const morgan = require('morgan');
 
+const pg = require('pg');
 const FactureService = require("./services/FactureService");
 const ProduitService = require("./services/ProduitService");
 const UserAccountService = require("./services/UserAccountService");
 
-const app = express();
+const app = express(); // ✅ app est défini ici AVANT son usage
+
+// ✅ CORS OPTIONS ici (met bien ton domaine Netlify)
+const corsOptions = {
+    origin: ["https://eloquent-pony-ceb5fb.netlify.app", "http://localhost:63342"],
+    methods: "GET,POST,PUT,DELETE",
+    credentials: true
+};
+
+app.use(cors(corsOptions)); // ✅ maintenant app est bien défini
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
-app.use(cors());
 app.use(morgan('dev'));
 app.use(xss());
 app.use(helmet());
