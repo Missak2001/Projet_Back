@@ -55,7 +55,18 @@ const express = require('express');
 const xss = require('xss-clean');
 const helmet = require('helmet');
 const bodyParser = require('body-parser');
-const cors = require('cors');
+// const cors = require('cors');
+const corsOptions = {
+    origin: [
+        "http://localhost:63342", // pour tests locaux
+        "https://eloquent-pony-ceb5fb.netlify.app" // ton site live Netlify
+    ],
+    methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
+    credentials: true
+};
+
+app.use(cors(corsOptions));
+
 const morgan = require('morgan');
 
 const FactureService = require("./services/FactureService");
