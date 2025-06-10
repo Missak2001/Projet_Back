@@ -80,35 +80,49 @@ module.exports = (app, svc, jwt) => {
     });
 
     app.post("/useraccount/register", async (req, res) => {
+        const { displayName, login, password, isEnterprise, role = "user" } = req.body;
+
+        const parsedIsEnterprise = isEnterprise === 'true' ? true : isEnterprise === 'false' ? false : isEnterprise;
+
+        console.log("🧪 Champs reçus :", {
+            displayName,
+            login,
+            password,
+            isEnterprise,
+            role,
+            type_isEnterprise: typeof isEnterprise
+        });
+
+        if (!displayName || !login || !password || (parsedIsEnterprise !== true && parsedIsEnterprise !== false)) {
+            console.log("❌ Champs invalides : envoi 400");
+            return res.status(400).json({ error: "Tous les champs sont requis (displayName, login, password, isEnterprise)" });
+        }
+
         try {
-            const { displayName, login, password, isEnterprise } = req.body;
-            if (!login || !password || password.length < 6) {
-                return res.status(400).json({ error: "Identifiants invalides" });
-            }
             const hashedPassword = await bcrypt.hash(password, 10);
-            console.log("👤 DONNÉES ENVOYÉES :", { displayName, login, password, isEnterprise });
-            await svc.insert(displayName, login, hashedPassword, isEnterprise);
+            await svc.insert(displayName, login, hashedPassword, parsedIsEnterprise, role);
             res.status(201).json({ message: "Utilisateur enregistré avec succès" });
         } catch (e) {
-            console.error("❌ Erreur dans register :", e);
-                res.status(500).json({ error: "Erreur interne du serveur" });
-            }
+            console.error("❌ Erreur dans /register:", e);
+            res.status(500).json({ error: "Erreur interne du serveur" });
+        }
     });
 
     app.post('/useraccount/authenticate', async (req, res) => {
         try {
             const { login, password } = req.body;
             if (!login || !password) {
-                return res.status(400).end();
+                return res.status(400).json({ error: "Identifiants manquants" });
             }
             const authenticated = await svc.validatePassword(login, password);
             if (!authenticated) {
-                return res.status(401).end();
+                return res.status(401).json({ error: "Identifiants invalides" });
             }
             const token = await jwt.generateJWT(login);
             res.json({ token });
         } catch (e) {
-            res.status(500).end();
+            console.error("Erreur d'authentification:", e);
+            res.status(500).json({ error: "Erreur serveur" });
         }
     });
 

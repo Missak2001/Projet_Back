@@ -1,4 +1,3 @@
-
 // const jwt = require('jsonwebtoken');
 //
 // // Clé secrète et durée de validité
